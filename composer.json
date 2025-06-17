@@ -22,7 +22,7 @@
     "require": {
         "php": ">=8.3",
         "neos/eventstore": "^1",
-        "wwwision/subscription-engine": "@dev"
+        "wwwision/subscription-engine": "^1"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",

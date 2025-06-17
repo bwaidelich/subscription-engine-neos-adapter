@@ -25,3 +25,11 @@ $subscriptionEngine = new SubscriptionEngine(
     ])
 );
 ```
+
+## Contribution
+
+Contributions in the form of [issues](https://github.com/bwaidelich/subscription-engine-neos-adapter/issues) or [pull requests](https://github.com/bwaidelich/subscription-engine-neos-adapter/pulls) are highly appreciated
+
+## License
+
+See [LICENSE](./LICENSE)
