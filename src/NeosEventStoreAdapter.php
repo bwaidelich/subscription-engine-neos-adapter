@@ -21,9 +21,10 @@ final readonly class NeosEventStoreAdapter implements EventStoreAdapter
     ) {
     }
 
-    public function read(Position $startPosition): iterable
+    public function read(Position $startPosition, int|null $limit = null): iterable
     {
-        return $this->eventStore->load(VirtualStreamName::all())->withMinimumSequenceNumber(SequenceNumber::fromInteger($startPosition->value));
+        $eventStream = $this->eventStore->load(VirtualStreamName::all())->withMinimumSequenceNumber(SequenceNumber::fromInteger($startPosition->value));
+        return $limit !== null ? $eventStream->limit($limit) : $eventStream;
     }
 
     public function lastPosition(): Position
