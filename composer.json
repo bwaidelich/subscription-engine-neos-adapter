@@ -22,25 +22,34 @@
     "require": {
         "php": ">=8.3",
         "neos/eventstore": "^1",
-        "wwwision/subscription-engine": "^1"
+        "wwwision/subscription-engine": "^1 || ^2"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
         "phpstan/phpstan": "^2",
-        "squizlabs/php_codesniffer": "^4.0.x-dev"
+        "squizlabs/php_codesniffer": "^4.0.x-dev",
+        "phpunit/phpunit": "^11",
+        "neos/eventstore-doctrineadapter": "^2"
     },
     "autoload": {
         "psr-4": {
             "Wwwision\\SubscriptionEngineNeosAdapter\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Wwwision\\SubscriptionEngineNeosAdapter\\Tests\\": "tests/"
+        }
+    },
     "scripts": {
         "test:phpstan": "phpstan",
         "test:cs": "phpcs --colors src",
         "test:cs:fix": "phpcbf --colors src",
+        "test:phpunit": "phpunit",
         "test": [
             "@test:phpstan",
-            "@test:cs"
+            "@test:cs",
+            "@test:phpunit"
         ]
     }
 }
