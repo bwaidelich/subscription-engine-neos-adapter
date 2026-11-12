@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Wwwision\SubscriptionEngineNeosAdapter\Tests;
 
+use DateTimeImmutable;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Schema\DefaultSchemaManagerFactory;
@@ -22,6 +23,7 @@ use Neos\EventStore\Model\EventStream\VirtualStreamName;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 use stdClass;
 use Wwwision\SubscriptionEngine\EventStore\ReadOptions;
 use Wwwision\SubscriptionEngine\Subscription\Position;
@@ -39,7 +41,12 @@ final class NeosEventStoreAdapterTest extends TestCase
         $configuration = new Configuration();
         $configuration->setSchemaManagerFactory(new DefaultSchemaManagerFactory());
         $connection = DriverManager::getConnection(['driver' => 'pdo_sqlite', 'memory' => true], $configuration);
-        $eventStore = new DoctrineEventStore($connection, eventTableName: 'events');
+        $eventStore = new DoctrineEventStore($connection, 'events', new class implements ClockInterface {
+            public function now(): DateTimeImmutable
+            {
+                return new DateTimeImmutable();
+            }
+        });
         $eventStore->setup();
         $events = [
             1 => ['order-1', 'OrderPlaced', 'c1'],
@@ -95,6 +102,7 @@ final class NeosEventStoreAdapterTest extends TestCase
         yield 'all streams' => [NeosEventFilter::create(), [1, 2, 3, 4]];
         yield 'stream' => [NeosEventFilter::create(StreamName::fromString('order-1')), [1, 3]];
         yield 'category' => [NeosEventFilter::create(VirtualStreamName::forCategory('order-')), [1, 2, 3]];
+        yield 'correlation id' => [NeosEventFilter::create(VirtualStreamName::forCorrelationId(CorrelationId::fromString('c2'))), [2, 4]];
         yield 'event types' => [NeosEventFilter::create(filter: EventStreamFilter::create(EventTypes::create(EventType::fromString('OrderCancelled'), EventType::fromString('CustomerRenamed')))), [3, 4]];
         yield 'category and event types' => [NeosEventFilter::create(VirtualStreamName::forCategory('order-'), EventStreamFilter::create(EventTypes::create(EventType::fromString('OrderPlaced')))), [1, 2]];
     }

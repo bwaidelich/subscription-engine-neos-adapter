@@ -21,7 +21,7 @@
     ],
     "require": {
         "php": ">=8.3",
-        "neos/eventstore": "^1",
+        "neos/eventstore": "^1.0.3 || ^2.0.2",
         "wwwision/subscription-engine": "^2"
     },
     "require-dev": {
@@ -29,7 +29,8 @@
         "phpstan/phpstan": "^2",
         "squizlabs/php_codesniffer": "^4.0.x-dev",
         "phpunit/phpunit": "^11",
-        "neos/eventstore-doctrineadapter": "^2"
+        "neos/eventstore-doctrineadapter": "^2 || ^3",
+        "psr/clock": "^1"
     },
     "autoload": {
         "psr-4": {

@@ -32,6 +32,7 @@ use Neos\EventStore\Model\Event\EventType;
 use Neos\EventStore\Model\Event\StreamName;
 use Neos\EventStore\Model\EventEnvelope;
 use Neos\EventStore\Model\EventStream\ExpectedVersion;
+use Psr\Clock\ClockInterface;
 use Wwwision\SubscriptionEngine\Subscriber\Subscriber;
 use Wwwision\SubscriptionEngine\Subscriber\Subscribers;
 use Wwwision\SubscriptionEngine\Subscription\RunMode;
@@ -42,7 +43,13 @@ use Wwwision\SubscriptionEngineNeosAdapter\NeosEventStoreAdapter;
 require __DIR__ . '/vendor/autoload.php';
 
 $connection = DriverManager::getConnection((new DsnParser())->parse('pdo-sqlite:///' . __DIR__ . '/demo.sqlite'));
-$eventStore = new DoctrineEventStore($connection, eventTableName: 'events');
+$clock = new class implements ClockInterface {
+    public function now(): DateTimeImmutable
+    {
+        return new DateTimeImmutable();
+    }
+};
+$eventStore = new DoctrineEventStore($connection, eventTableName: 'events', clock: $clock);
 
 $engine = new SubscriptionEngine(
     eventStoreAdapter: new NeosEventStoreAdapter($eventStore),
