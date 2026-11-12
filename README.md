@@ -82,6 +82,29 @@ Invoking process for SomethingHappened
 Projecting SomethingHappened at position 1
 ```
 
+## Filtered subscribers
+
+A subscriber can declare a `NeosEventFilter` to receive only the events of one stream, optionally narrowed to some event types:
+
+```php
+use Neos\EventStore\Model\Event\EventType;
+use Neos\EventStore\Model\Event\EventTypes;
+use Neos\EventStore\Model\EventStream\EventStreamFilter;
+use Neos\EventStore\Model\EventStream\VirtualStreamName;
+use Wwwision\SubscriptionEngineNeosAdapter\NeosEventFilter;
+
+Subscriber::create(
+    id: 'orders',
+    handler: $handler,
+    filter: NeosEventFilter::create(
+        VirtualStreamName::forCategory('order-'),
+        EventStreamFilter::create(EventTypes::create(EventType::fromString('OrderPlaced'))),
+    ),
+);
+```
+
+If a run contains several subscriptions, the engine applies the filters itself: Stream names are compared exactly, categories by prefix and correlation ids by equality. Avoid `%` and `_` in categories, and case-insensitive collations, where the database would decide differently. See [Filtered subscribers](https://github.com/bwaidelich/subscription-engine/blob/main/docs/how-it-works.md#filtered-subscribers) for how the engine applies filters.
+
 ## Next steps
 
 The [guides of the Subscription Engine](https://github.com/bwaidelich/subscription-engine#guides) explain how to rebuild projections, handle failures and more. To process events in the background, see [wwwision/subscription-engine-worker](https://github.com/bwaidelich/subscription-engine-worker).
